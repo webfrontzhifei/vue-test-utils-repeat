@@ -1,6 +1,6 @@
 import { compileToFunctions } from 'vue-template-compiler'
 import mount from '../../../../src/mount'
-// import ComponentWithChildComponent from '../../../resources/components/component-with-child-component.vue'
+import ComponentWithChildComponent from '../../../resources/components/component-with-child-component.vue'
 import Component from '../../../resources/components/component.vue'
 
 describe('contains', () => {
@@ -10,10 +10,10 @@ describe('contains', () => {
     expect(wrapper.contains('input')).to.equal(true)
   })
 
-  // it('returns true if wrapper contains Vue component', () => {
-  //   const wrapper = mount(ComponentWithChildComponent)
-  //   expect(wrapper.contains(Component)).to.equal(true)
-  // })
+  it('returns true if wrapper contains Vue component', () => {
+    const wrapper = mount(ComponentWithChildComponent)
+    expect(wrapper.contains(Component)).to.equal(true)
+  })
 
   it('returns false if wrapper does not contain element', () => {
     const compiled = compileToFunctions('<div><input /></div>')

@@ -4,20 +4,20 @@ function findAllVNodes (vNode, nodes = []) {
   nodes.push(vNode)
 
   if (Array.isArray(vNode.children)) {
-    vNode.children.forEach((childNode) => {
-      findAllVNodes(childNode, nodes)
+    vNode.children.forEach((childVNode) => {
+      findAllVNodes(childVNode, nodes)
     })
   }
 
   if (vNode.child) {
-    findAllVNodes(vNode.child._vnode, nodes))
+    findAllVNodes(vNode.child._vnode, nodes)
   }
 
-  return nodes;
+  return nodes
 }
 
 function removeDuplicateNodes (vNodes) {
-  const uniqueNodes = [];
+  const uniqueNodes = []
   vNodes.forEach((vNode) => {
     const exists = uniqueNodes.some(node => vNode.elm === node.elm)
     if (!exists) {
@@ -36,3 +36,4 @@ export default function findMatchingVNodes (vNode, selector) {
   const matchingNodes = nodes.filter(node => nodeMatchesSelector(node, selector))
   return removeDuplicateNodes(matchingNodes)
 }
+

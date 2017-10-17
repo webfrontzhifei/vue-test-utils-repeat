@@ -1,6 +1,6 @@
 import { isValidSelector } from './lib/validators'
 import findVueComponents from './lib/findVueComponents'
-import findMatchingVModes from './lib/findMatchingVNodes'
+import findMatchingVNodes from './lib/findMatchingVNodes'
 import VueWrapper from './VueWrapper'
 
 export default class Wrapper {
@@ -11,6 +11,12 @@ export default class Wrapper {
     this.mountedToDom = mountedToDom
   }
 
+  /**
+   * Checks if wrapper contains provided selector.
+   *
+   * @param {String} selector
+   * @returns {Boolean}
+   */
   contains (selector) {
     if (!isValidSelector(selector)) {
       throw new Error('wrapper.contains() must be passed a valid CSS selector or a Vue constructor')
@@ -24,8 +30,14 @@ export default class Wrapper {
     return this.element.querySelectorAll(selector).length > 0
   }
 
+    /**
+     * Finds every node in the mount tree of the current wrapper that matches the provided selector.
+     *
+     * @param {String|Object} selector
+     * @returns {VueWrapper||VueWrapper[]}
+     */
   find (selector) {
-    if (!isValidSelector(selecor)) {
+    if (!isValidSelector(selector)) {
       throw new Error('wrapper.find() must be passed a valid CSS selector or a Vue constructor')
     }
 
@@ -33,13 +45,13 @@ export default class Wrapper {
       if (!selector.name) {
         throw new Error('.find() requires component to have a name property')
       }
-      const vm = this.vm || this.vNode.context.$root;
+      const vm = this.vm || this.vNode.context.$root
       const components = findVueComponents(vm, selector.name)
       return components.map(component => new VueWrapper(component, undefined, this.mounted))
     }
+
+    const nodes = findMatchingVNodes(this.vNode, selector)
+
+    return nodes.map(node => new Wrapper(node, this.update, this.mountedToDom))
   }
-
-  const nodes = findMatchingVNodes(this.vNode, selector)
-
-  return nodes.map(node => new Wrapper(node, this.update, this.mountedToDom))
 }

@@ -5,10 +5,10 @@ export function isDomSelector (str) {
 
   try {
     if (typeof document === 'undefined') {
-      throw new Error('mount must be run in a browser envirionment like PhantomJS, jsdom or chrome')
+      throw new Error('mount must be run in a browser environment like PhantomJS, jsdom or chrome')
     }
   } catch (error) {
-    throw new Error('mount must be run in a browser envirionment like PhantomJS, jsdom or chrome')
+    throw new Error('mount must be run in a browser environment like PhantomJS, jsdom or chrome')
   }
 
   try {

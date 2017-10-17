@@ -4,7 +4,7 @@ import Component from '../../../resources/components/component.vue'
 import ComponentWithoutName from '../../../resources/components/component-without-name.vue'
 
 describe('isVueComponent', () => {
-  it('returns true usint a named.vue file', () => {
+  it('returns true using a named .vue file', () => {
     expect(isVueComponent(Component)).to.equal(true)
   })
 
