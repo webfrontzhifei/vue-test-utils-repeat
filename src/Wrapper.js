@@ -2,6 +2,7 @@ import { isValidSelector } from './lib/validators'
 import findVueComponents from './lib/findVueComponents'
 import findMatchingVNodes from './lib/findMatchingVNodes'
 import VueWrapper from './VueWrapper'
+import WrapperArray from './WrapperArray'
 
 export default class Wrapper {
   constructor (vNode, update, mountedToDom) {
@@ -30,6 +31,18 @@ export default class Wrapper {
     return this.element.querySelectorAll(selector).length > 0
   }
 
+  hasAttribute (attribute, value) {
+    if (typeof attribute !== 'string') {
+      throw new Error('wrapper.hasAttribute() must be passed attribute as a string')
+    }
+
+    if (typeof value !== 'string') {
+      throw new Error('wrapper.hasAttribute() must be passed value as a string')
+    }
+
+    return this.element.getAttribute(attribute) === value
+  }
+
     /**
      * Finds every node in the mount tree of the current wrapper that matches the provided selector.
      *
@@ -47,12 +60,12 @@ export default class Wrapper {
       }
       const vm = this.vm || this.vNode.context.$root
       const components = findVueComponents(vm, selector.name)
-      return components.map(component => new VueWrapper(component, undefined, this.mounted))
+      return new WrapperArray(components.map(component => new VueWrapper(component, undefined, this.mounted)))
     }
 
     const nodes = findMatchingVNodes(this.vNode, selector)
 
-    return nodes.map(node => new Wrapper(node, this.update, this.mountedToDom))
+    return new WrapperArray(nodes.map(node => new Wrapper(node, this.update, this.mountedToDom)))
   }
 
   setData (data) {
@@ -77,5 +90,34 @@ export default class Wrapper {
     })
     this.update()
     this.vNode = this.vm._vnode
+  }
+
+  trigger (type) {
+    if (typeof type !== 'string') {
+      throw new Error('wrapper.trigger() must be passed a string')
+    }
+
+    const modifiers = {
+      enter: 13,
+      tab: 9,
+      delete: 46,
+      esc: 27,
+      space: 32,
+      up: 38,
+      down: 40,
+      left: 37,
+      right: 39
+    }
+
+    const event = type.split('.')
+
+    const eventObject = new window.Event(event[0])
+
+    if (event.length === 2) {
+      eventObject.keyCode = modifiers[event[1]]
+    }
+
+    this.element.dispatchEvent(eventObject)
+    this.update()
   }
 }
