@@ -31,6 +31,13 @@ export default class Wrapper {
     return this.element.querySelectorAll(selector).length > 0
   }
 
+  /**
+   * Checks if wrapper has an attribute with matching value
+   *
+   * @param {String} attribute - attribute to assert
+   * @param {String} value - value attribute should contain
+   * @returns {Boolean}
+   */
   hasAttribute (attribute, value) {
     if (typeof attribute !== 'string') {
       throw new Error('wrapper.hasAttribute() must be passed attribute as a string')
@@ -43,12 +50,26 @@ export default class Wrapper {
     return this.element.getAttribute(attribute) === value
   }
 
-    /**
-     * Finds every node in the mount tree of the current wrapper that matches the provided selector.
-     *
-     * @param {String|Object} selector
-     * @returns {VueWrapper||VueWrapper[]}
-     */
+  /**
+   * Asserts wrapper has a class name
+   *
+   * @param {String} className - class name to assert
+   * @returns {Boolean}
+   */
+  hasClass (className) {
+    if (typeof className !== 'string') {
+      throw new Error('wrapper.hasClass() must be passed a string')
+    }
+
+    return this.element.className.split(' ').indexOf(className) !== -1
+  }
+
+  /**
+   * Finds every node in the mount tree of the current wrapper that matches the provided selector.
+   *
+   * @param {String|Object} selector
+   * @returns {VueWrapper||VueWrapper[]}
+   */
   find (selector) {
     if (!isValidSelector(selector)) {
       throw new Error('wrapper.find() must be passed a valid CSS selector or a Vue constructor')
@@ -68,6 +89,11 @@ export default class Wrapper {
     return new WrapperArray(nodes.map(node => new Wrapper(node, this.update, this.mountedToDom)))
   }
 
+  /**
+   * Sets vm data
+   *
+   * @param {Object} data - data to set
+   */
   setData (data) {
     if (!this.isVueComponent) {
       throw new Error('wrapper.setData() can only be called on a Vue instance')
@@ -80,6 +106,11 @@ export default class Wrapper {
     this.vNode = this.vm._vnode
   }
 
+  /**
+   * Sets vm props
+   *
+   * @param {Object} data - data to set
+   */
   setProps (data) {
     if (!this.isVueComponent) {
       throw new Error('wrapper.setProps() can only be called on a Vue instance')
@@ -92,6 +123,12 @@ export default class Wrapper {
     this.vNode = this.vm._vnode
   }
 
+  /**
+   * Dispatches a DOM event on wrapper
+   *
+   * @param {String} type - type of event
+   * @returns {Boolean}
+   */
   trigger (type) {
     if (typeof type !== 'string') {
       throw new Error('wrapper.trigger() must be passed a string')
