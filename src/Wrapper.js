@@ -54,4 +54,28 @@ export default class Wrapper {
 
     return nodes.map(node => new Wrapper(node, this.update, this.mountedToDom))
   }
+
+  setData (data) {
+    if (!this.isVueComponent) {
+      throw new Error('wrapper.setData() can only be called on a Vue instance')
+    }
+
+    Object.keys(data).forEach((key) => {
+      this.vm.$set(this.vm, [key], data[key])
+    })
+    this.update()
+    this.vNode = this.vm._vnode
+  }
+
+  setProps (data) {
+    if (!this.isVueComponent) {
+      throw new Error('wrapper.setProps() can only be called on a Vue instance')
+    }
+
+    Object.keys(data).forEach((key) => {
+      this.vm._props[key] = data[key]
+    })
+    this.update()
+    this.vNode = this.vm._vnode
+  }
 }
