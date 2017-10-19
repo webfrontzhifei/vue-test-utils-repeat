@@ -1,22 +1,37 @@
+import { compileToFunctions } from 'vue-template-compiler'
+
+function isValidSlot (slot) {
+  return Array.isArray(slot) || (slot !== null && typeof slot === 'object') || typeof slot === 'string'
+}
+
+function addSlotToVm (vm, slotName, slotValue) {
+  if (Array.isArray(vm.$slots[slotName])) {
+    if (typeof slotValue === 'string') {
+      vm.$slots[slotName].push(vm.$createElement(compileToFunctions(slotValue)))
+    } else {
+      vm.$slots[slotName].push(vm.$createElement(slotValue))
+    }
+  } else {
+    if (typeof slotValue === 'string') {
+      vm.$slots[slotName] = [vm.$createElement(compileToFunctions(slotValue))]
+    } else {
+      vm.$slots[slotName] = [vm.$createElement(slotValue)] // eslint-disable-line no-param-reassign
+    }
+  }
+}
+
 function addSlots (vm, slots) {
   Object.keys(slots).forEach((key) => {
-    const slotsObj = slots[key]
-    if (!(Array.isArray(slots[key])) && !(slotsObj !== null && typeof slotsObj === 'object')) {
-      throw new Error('slots[key] must be a Component or an array of Components')
+    if (!isValidSlot(slots[key])) {
+      throw new Error('slots[key] must be a Component, string or an array of Components')
     }
-    const isArray = Array.isArray(slotsObj)
-    if (isArray) {
-      Object.keys(slotsObj).forEach((objKey) => {
-        if (Array.isArray(vm.$slots[key])) {
-          vm.$slots[key].push(vm.$createElement(slotsObj[objKey]))
-        } else {
-          vm.$slots[key] = [vm.$createElement(slotsObj[objKey])] // eslint-disable-line no-param-reassign,max-len
-        }
+
+    if (Array.isArray(slots[key])) {
+      slots[key].forEach((slotValue) => {
+        addSlotToVm(vm, key, slotValue)
       })
-    } else if (Array.isArray(vm.$slots[key])) {
-      vm.$slots[key].push(vm.$createElement(slotsObj))
     } else {
-      vm.$slots[key] = [vm.$createElement(slotsObj)] // eslint-disable-line no-param-reassign,max-len
+      addSlotToVm(vm, key, slots[key])
     }
   })
 }

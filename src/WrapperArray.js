@@ -20,8 +20,24 @@ export default class WrapperArray {
     return this.wrappers.every(wrapper => wrapper.hasClass(className))
   }
 
+  hasProp (prop, value) {
+    return this.wrappers.every(wrapper => wrapper.hasProp(prop, value))
+  }
+
   hasStyle (style, value) {
     return this.wrappers.every(wrapper => wrapper.hasStyle(style, value))
+  }
+
+  find (selector) {
+    if (this.wrappers.length === 0) {
+      throw new Error('find cannot be called on 0 items')
+    }
+
+    if (this.wrappers.length > 1) {
+      throw new Error('find must be called on a single wrapper, use at(i) to access a wrapper')
+    }
+
+    return this.wrappers[0].find(selector)
   }
 
   html () {
@@ -30,7 +46,7 @@ export default class WrapperArray {
     }
 
     if (this.wrappers.length > 1) {
-      throw new Error('html cannot be called on more than 1 item, use at(i) to access the item')
+      throw new Error('html must be called on a single wrapper, use at(i) to access a wrapper')
     }
 
     return this.wrappers[0].html()
@@ -40,16 +56,36 @@ export default class WrapperArray {
     return this.wrappers.every(wrapper => wrapper.is(selector))
   }
 
-  find (selector) {
+  isEmpty () {
+    return this.wrappers.every(wrapper => wrapper.isEmpty())
+  }
+
+  isVueInstance () {
+    return this.wrappers.every(wrapper => wrapper.isVueInstance())
+  }
+
+  name () {
     if (this.wrappers.length === 0) {
-      throw new Error('find cannot be called on 0 items')
+      throw new Error('name cannot be called on 0 items')
     }
 
     if (this.wrappers.length > 1) {
-      throw new Error('find cannot be called on more than 1 item, use at(i) to access the item')
+      throw new Error('name must be called on a single wrapper, use at(i) to access a wrapper')
     }
 
-    return this.wrappers[0].find(selector)
+    return this.wrappers[0].name()
+  }
+
+  text () {
+    if (this.wrappers.length === 0) {
+      throw new Error('text cannot be called on 0 items')
+    }
+
+    if (this.wrappers.length > 1) {
+      throw new Error('text must be called on a single wrapper, use at(i) to access a wrapper')
+    }
+
+    return this.wrappers[0].text()
   }
 
   setData (data) {
