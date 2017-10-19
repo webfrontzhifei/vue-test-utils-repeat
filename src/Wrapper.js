@@ -1,3 +1,4 @@
+import { matchesSelector } from 'sizzle'
 import { isValidSelector } from './lib/validators'
 import findVueComponents from './lib/findVueComponents'
 import findMatchingVNodes from './lib/findMatchingVNodes'
@@ -64,6 +65,32 @@ export default class Wrapper {
     return this.element.className.split(' ').indexOf(className) !== -1
   }
 
+  hasStyle (style, value) {
+    if (typeof style !== 'string') {
+      throw new Error('wrapper.hasStyle() must be passed style as a string')
+    }
+
+    if (typeof value !== 'string') {
+      throw new Error('wrapper.hasStyle() must be passed value as a srting')
+    }
+
+    if (navigator.userAgent.includes && (navigator.userAgent.includes('node.js') || navigator.userAgent.includes('jsdom'))) {
+      console.warn('wrapper.hasStyle is not fully supported when running jsdom - only inline styles are supported')
+    }
+    const body = document.querySelector('body')
+    const mockElement = document.createElement('div')
+    const mockNode = body.insertBefore(mockElement, null)
+    mockElement.style[style] = value
+
+    if (!this.mountedToDom) {
+      const vm = this.vm || this.vNode.context.$root
+      body.insertBefore(vm.$root._vnode.elm, null)
+    }
+
+    const elStyle = window.getComputedStyle(this.element)[style]
+    const mockNodeStyle = window.getComputedStyle(mockNode)[style]
+    return elStyle === mockNodeStyle
+  }
   /**
    * Finds every node in the mount tree of the current wrapper that matches the provided selector.
    *
@@ -89,6 +116,26 @@ export default class Wrapper {
     return new WrapperArray(nodes.map(node => new Wrapper(node, this.update, this.mountedToDom)))
   }
 
+  html () {
+    const tmp = document.createElement('div')
+    tmp.appendChild(this.element)
+    return tmp.innerHTML
+  }
+
+  is (selector) {
+    if (!isValidSelector(selector)) {
+      throw new Error('wrapper.is() must be passed a valid CSS selector or a Vue constructor')
+    }
+
+    if (typeof selector === 'object') {
+      if (!this.isVueComponent) {
+        return false
+      }
+
+      return this.vm.$vnode.componentOptions.Ctor.options.name === selector.name
+    }
+    return this.element.getAttribute && matchesSelector(this.element, selector)
+  }
   /**
    * Sets vm data
    *

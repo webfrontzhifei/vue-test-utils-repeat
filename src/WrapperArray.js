@@ -20,6 +20,26 @@ export default class WrapperArray {
     return this.wrappers.every(wrapper => wrapper.hasClass(className))
   }
 
+  hasStyle (style, value) {
+    return this.wrappers.every(wrapper => wrapper.hasStyle(style, value))
+  }
+
+  html () {
+    if (this.wrappers.length === 0) {
+      throw new Error('html cannot be called on 0 items')
+    }
+
+    if (this.wrappers.length > 1) {
+      throw new Error('html cannot be called on more than 1 item, use at(i) to access the item')
+    }
+
+    return this.wrappers[0].html()
+  }
+
+  is (selector) {
+    return this.wrappers.every(wrapper => wrapper.is(selector))
+  }
+
   find (selector) {
     if (this.wrappers.length === 0) {
       throw new Error('find cannot be called on 0 items')
